@@ -12,7 +12,7 @@ func main() {
 		log.Printf("%s\n", err)
 	}
 
-	// backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d chinaloyalty -o "./dmp"
+	// backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp"
 	// clearold -o "./dmp" -d 31
 	cmd.Execute()
 }
