@@ -2,6 +2,9 @@ package bll
 
 import (
 	"fmt"
+	"github.com/ourcolour/dataarchiver/configs"
+	"github.com/ourcolour/dataarchiver/constants/errs"
+	"github.com/ourcolour/dataarchiver/utils"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,9 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"xjh.com/dataarchiver/configs"
-	"xjh.com/dataarchiver/constants/errs"
-	"xjh.com/dataarchiver/utils"
 )
 
 func createDirectoryIfNotExists(targetDirPath string) error {

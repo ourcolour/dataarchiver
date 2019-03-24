@@ -15,10 +15,10 @@
 package cmd
 
 import (
+	"github.com/ourcolour/dataarchiver/services"
+	"github.com/ourcolour/dataarchiver/services/impl"
 	"log"
 	"strconv"
-	"xjh.com/dataarchiver/services"
-	"xjh.com/dataarchiver/services/impl"
 
 	"github.com/spf13/cobra"
 )

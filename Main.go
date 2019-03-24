@@ -1,9 +1,9 @@
 package dataarchiver
 
 import (
+	"github.com/ourcolour/dataarchiver/cmd"
+	"github.com/ourcolour/dataarchiver/configs"
 	"log"
-	"xjh.com/dataarchiver/cmd"
-	"xjh.com/dataarchiver/configs"
 )
 
 func main() {

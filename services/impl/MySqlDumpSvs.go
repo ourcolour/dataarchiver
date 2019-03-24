@@ -2,14 +2,14 @@ package impl
 
 import (
 	"github.com/mholt/archiver"
+	"github.com/ourcolour/dataarchiver/configs"
+	"github.com/ourcolour/dataarchiver/services"
+	"github.com/ourcolour/dataarchiver/services/impl/bll"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-	"xjh.com/dataarchiver/configs"
-	"xjh.com/dataarchiver/services"
-	"xjh.com/dataarchiver/services/impl/bll"
 )
 
 type MySqlDumpSvs struct {

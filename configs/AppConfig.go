@@ -1,12 +1,12 @@
 package configs
 
 import (
+	"github.com/ourcolour/dataarchiver/constants/errs"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"xjh.com/dataarchiver/constants/errs"
 )
 
 const (
