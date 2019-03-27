@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 dbArchiver<CC.Yao>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
 package cmd
 
 import (
+	"github.com/ourcolour/dataarchiver/configs"
 	"github.com/ourcolour/dataarchiver/services"
 	"github.com/ourcolour/dataarchiver/services/impl"
+	"github.com/spf13/cobra"
 	"log"
 	"strconv"
 
@@ -31,8 +33,10 @@ var clearoldCmd = &cobra.Command{
 clearold -o "./dmp" -d 31
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		outputDir := cmd.Flag("outputdir").Value.String()
-		overDays, err := strconv.Atoi(cmd.Flag("overdays").Value.String())
+		// Arguments
+		outputDir, err := cmd.Flags().GetString("outputdir")
+		overDays, err := cmd.Flags().GetInt("overdays")
+
 		if nil != err {
 			log.Panicf("%s\n", err)
 			return
@@ -46,6 +50,6 @@ clearold -o "./dmp" -d 31
 func init() {
 	rootCmd.AddCommand(clearoldCmd)
 
-	clearoldCmd.Flags().StringP("outputdir", "o", "./", "Output dir path")
-	clearoldCmd.Flags().StringP("overdays", "d", "31", "Over days count")
+	clearoldCmd.Flags().StringP("outputdir", "o", configs.DEFAULT_OUTPUT_DIR, "Output dir path")
+	clearoldCmd.Flags().IntP("overdays", "d", 31, "Over days count")
 }

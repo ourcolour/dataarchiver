@@ -1,14 +1,11 @@
 package impl
 
 import (
-	"github.com/mholt/archiver"
-	"github.com/ourcolour/dataarchiver/configs"
 	"github.com/ourcolour/dataarchiver/services"
 	"github.com/ourcolour/dataarchiver/services/impl/bll"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -19,44 +16,42 @@ func NewMySqlDumpSvs() services.IDumpSvs {
 	return services.IDumpSvs(&MySqlDumpSvs{})
 }
 
-func (this *MySqlDumpSvs) Backup(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string) error {
-	var err error
+func (this *MySqlDumpSvs) Backup(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string, compress bool) (string, error) {
+	log.Printf("备份至目录：`%s`\n", outputDirPath)
 
-	var dumpFilePath string
-	if dumpFilePath, err = this.generateDumpFile(host, port, user, pass, dbName, tableName, outputDirPath); nil != err {
-		log.Panicf("%s\n", err)
-		return err
-	}
+	dumpFilePath, err := bll.Dump(host, port, user, pass, dbName, tableName, outputDirPath, compress)
+	//dumpFilePath, err := this.generateDumpFile(host, port, user, pass, dbName, tableName, outputDirPath, compress)
 
-	// 压缩包文件名
-	var zipName string
-	if zipName, err = bll.GenerateZipNameByDumpFilePath(dumpFilePath); nil != err {
-		log.Panicf("%s\n", err)
-		return err
-	}
-	zipPath := filepath.Join(outputDirPath, zipName)
+	log.Printf("备份完毕：`%s`\n", dumpFilePath)
 
-	// 压缩文件
-	if err = this.zipDumpFile([]string{dumpFilePath}, zipPath); nil != err {
-		log.Panicf("%s\n", err)
-		return err
-	}
+	return dumpFilePath, err
 
-	// 删除 dump 文件
-	if err = this.deleteDumpFile([]string{dumpFilePath}); nil != err {
-		log.Panicf("%s\n", err)
-		return err
-	}
+	/*
+		// 压缩包文件名
+		var zipName string
+		if zipName, err = bll.GenerateZipNameByDumpFilePath(dumpFilePath); nil != err {
+			log.Panicf("%s\n", err)
+			return err
+		}
+		zipPath := filepath.Join(outputDirPath, zipName)
 
-	log.Printf("备份完毕：`%s`\n", zipPath)
+		// 压缩文件
+		if err = this.zipDumpFile([]string{dumpFilePath}, zipPath); nil != err {
+			log.Panicf("%s\n", err)
+			return err
+		}
 
-	return nil
+		// 删除 dump 文件
+		if err = this.deleteDumpFile([]string{dumpFilePath}); nil != err {
+			log.Panicf("%s\n", err)
+			return err
+		}
+	*/
 }
 
-func (this *MySqlDumpSvs) generateDumpFile(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string) (string, error) {
-	log.Printf("备份至目录：`%s`\n", outputDirPath)
-	targetFilePath, err := bll.Dump(host, port, user, pass, dbName, tableName, outputDirPath)
-	return targetFilePath, err
+/*
+func (this *MySqlDumpSvs) generateDumpFile(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string, compress bool) (string, error) {
+	return bll.Dump(host, port, user, pass, dbName, tableName, outputDirPath, compress)
 }
 
 func (this *MySqlDumpSvs) zipDumpFile(srcPathArray []string, dstPath string) error {
@@ -81,6 +76,7 @@ func (this *MySqlDumpSvs) deleteDumpFile(srcPathArray []string) error {
 
 	return nil
 }
+*/
 
 func (this *MySqlDumpSvs) DeleteOldArchiveByOverDayCount(dirPath string, overDays int) ([]string, error) {
 	var (
@@ -105,16 +101,15 @@ func (this *MySqlDumpSvs) DeleteOldArchiveByOverDayCount(dirPath string, overDay
 		// 比较修改时间
 		if info.ModTime().Add(overHours).Before(time.Now()) {
 			// 过滤文件
-			extName := filepath.Ext(info.Name())
-			if configs.ZIP_FILE_EXT == strings.ToLower(strings.TrimSpace(extName)) {
+			//extName := filepath.Ext(info.Name())
 
+			if true { // configs.ZIP_FILE_EXT == strings.ToLower(strings.TrimSpace(extName)) || configs.GZIP_FILE_EXT == strings.ToLower(strings.TrimSpace(extName)) {
 				if err := os.Remove(path); nil != err {
 					log.Printf("删除文件失败：`%s`\n", err)
 				} else {
 					log.Printf("删除过期文件：%s\n", path)
 					result = append(result, path)
 				}
-
 			} else {
 				log.Printf("跳过无效文件：%s\n", path)
 			}

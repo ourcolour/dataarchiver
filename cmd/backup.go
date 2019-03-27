@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 dbArchiver<CC.Yao>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"github.com/ourcolour/dataarchiver/constants/errs"
+	"github.com/ourcolour/dataarchiver/configs"
 	"github.com/ourcolour/dataarchiver/services"
 	"github.com/ourcolour/dataarchiver/services/impl"
 	"github.com/spf13/cobra"
@@ -28,23 +28,25 @@ var backupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "Backup database",
 	Long: `Backup database by mysqldump, e.g.:
-backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp"
-`,
+backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		host := cmd.Flag("host").Value.String()
-		port, err := strconv.Atoi(cmd.Flag("port").Value.String())
+		// Arguments
+		host, err := cmd.Flags().GetString("host")
+		port, err := cmd.Flags().GetInt("port")
+		user, err := cmd.Flags().GetString("user")
+		pass, err := cmd.Flags().GetString("pass")
+		dbName, err := cmd.Flags().GetString("dbName")
+		tblName, err := cmd.Flags().GetString("tblName")
+		outputDir, err := cmd.Flags().GetString("outputdir")
+		compress, err := cmd.Flags().GetBool("compress")
+
 		if nil != err {
-			log.Panicf("%s\n", errs.ERR_INVALID_PARAMETERS)
+			log.Panicf("%s\n", err.Error())
 			return
 		}
-		user := cmd.Flag("user").Value.String()
-		pass := cmd.Flag("pass").Value.String()
-		dbName := cmd.Flag("dbname").Value.String()
-		tableName := cmd.Flag("tablename").Value.String()
-		outputDirPath := cmd.Flag("outputdir").Value.String()
 
 		var dumpSvs services.IDumpSvs = impl.NewMySqlDumpSvs()
-		dumpSvs.Backup(host, port, user, pass, dbName, tableName, outputDirPath)
+		dumpSvs.Backup(host, port, user, pass, dbName, tblName, outputDir, compress)
 	},
 }
 
@@ -54,8 +56,10 @@ func init() {
 	backupCmd.Flags().StringP("host", "H", "localhost", "Database host")
 	backupCmd.Flags().StringP("port", "P", "3306", "Database port")
 	backupCmd.Flags().StringP("user", "u", "root", "Username")
-	backupCmd.Flags().StringP("pass", "p", "", "Password")
+	backupCmd.Flags().StringP("pass", "p", "root", "Password")
+	backupCmd.Flags().StringP("outputdir", "o", configs.DEFAULT_OUTPUT_DIR, "Output dir path")
+
 	backupCmd.Flags().StringP("dbname", "d", "", "Database name")
-	backupCmd.Flags().StringP("tablename", "t", "", "Table name")
-	backupCmd.Flags().StringP("outputdir", "o", "./", "Output dir path")
+	backupCmd.Flags().StringP("tblname", "t", "", "Table name")
+	backupCmd.Flags().BoolP("compress", "c", true, "Compress dump file")
 }

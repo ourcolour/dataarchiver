@@ -2,6 +2,7 @@ package configs
 
 import (
 	"github.com/ourcolour/dataarchiver/constants/errs"
+	"github.com/ourcolour/frameworks/utils"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,11 +13,15 @@ import (
 const (
 	DUMP_FILE_EXT = ".dmp"
 	ZIP_FILE_EXT  = ".zip"
+	GZIP_FILE_EXT = ".gzip"
 )
 
-var MYSQL_HOME = ""         //os.Getenv("MYSQL_HOME")
-var MYSQL_BIN_DIR_PATH = "" //filepath.Join(MYSQL_HOME, "bin")
-var MYSQLDUMP_PATH = ""     //filepath.Join(MYSQL_BIN_DIR_PATH, "mysqldump")
+var (
+	MYSQL_HOME         = "" //os.Getenv("MYSQL_HOME")
+	MYSQL_BIN_DIR_PATH = "" //filepath.Join(MYSQL_HOME, "bin")
+	MYSQLDUMP_PATH     = "" //filepath.Join(MYSQL_BIN_DIR_PATH, "mysqldump")
+	DEFAULT_OUTPUT_DIR = filepath.Join(utils.GetAppPath(), "dump_data")
+)
 
 func CheckMysqlDump() error {
 	MYSQL_HOME = os.Getenv("MYSQL_HOME")
