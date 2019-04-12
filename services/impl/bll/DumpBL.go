@@ -107,9 +107,9 @@ func Dump(host string, port int, user, password, dbName, tableName, targetDirPat
 	return backupPath, err
 }
 
-//func WriteGZip(reader io.ReadCloser, srcPath string, dstPath string) (int, error) {
-//	return writeGZip(reader, srcPath, dstPath)
-//}
+func WriteGZip(reader io.Reader, srcPath string, dstPath string) (int, error) {
+	return writeGZip(reader, srcPath, dstPath)
+}
 
 const BUFFER_SIZE = 1024 * 4
 
@@ -156,7 +156,7 @@ func writeDump(reader io.ReadCloser, srcPath string, dstPath string) (int, error
 	return total, err
 }
 
-func writeGZip(reader io.ReadCloser, srcPath string, dstPath string) (int, error) {
+func writeGZip(reader io.Reader, srcPath string, dstPath string) (int, error) {
 	srcFileName := filepath.Base(srcPath)
 
 	// 文件输出流

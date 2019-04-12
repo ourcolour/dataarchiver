@@ -20,7 +20,6 @@ import (
 	"github.com/ourcolour/dataarchiver/services/impl"
 	"github.com/spf13/cobra"
 	"log"
-	"strconv"
 )
 
 // backupCmd represents the backup command

@@ -13,7 +13,7 @@ import (
 const (
 	DUMP_FILE_EXT = ".dmp"
 	ZIP_FILE_EXT  = ".zip"
-	GZIP_FILE_EXT = ".gzip"
+	GZIP_FILE_EXT = ".gz"
 )
 
 var (
