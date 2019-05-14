@@ -49,10 +49,11 @@ func createDirectoryIfNotExists(targetDirPath string) error {
  * @param 	databaseName:	需要被分的数据库名: test
  * @param 	tableName:		需要备份的表名: user
  * @param 	sqlPath:		备份SQL存储路径: D:/backup/test/
+ * @param 	args:			额外的参数
  * @return 	backupPath
  *
  */
-func Dump(host string, port int, user, password, dbName, tableName, targetDirPath string, compress bool) (string, error) {
+func Dump(host string, port int, user, password, dbName, tableName, targetDirPath string, compress bool, args ...string) (string, error) {
 	// 检查 mysqldump 是否存在
 	fileInfo, err := os.Stat(configs.MYSQLDUMP_PATH)
 	if nil != err {
@@ -62,23 +63,53 @@ func Dump(host string, port int, user, password, dbName, tableName, targetDirPat
 		return "", errs.ERR_INVALID_PARAMETERS
 	}
 
-	var cmd *exec.Cmd
-	if strings.TrimSpace(dbName) == "" {
-		cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, "--all-databases")
-	} else if strings.TrimSpace(tableName) == "" {
-		cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, dbName)
-	} else {
-		cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, dbName, tableName)
+	var options []string = []string{
+		"--opt",
+		"-h" + host,
+		"-P" + strconv.Itoa(port),
+		"-u" + user,
+		"-p" + password,
 	}
 
-	// 生成带时间戳的文件名
-	var backupFileName string
-	if !compress {
-		backupFileName = GenerateDumpFileBaseName(dbName, tableName)
+	//cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, "--all-databases", args...)
+	//cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, dbName, args...)
+	//cmd = exec.Command(configs.MYSQLDUMP_PATH, "--opt", "-h"+host, "-P"+strconv.Itoa(port), "-u"+user, "-p"+password, dbName, tableName, args...)
+	if strings.TrimSpace(dbName) == "" {
+		options = append(options, "--all-databases")
+	} else if strings.TrimSpace(tableName) == "" {
+		options = append(options, dbName)
 	} else {
-		backupFileName = GenerateGzipFileBaseName(dbName, tableName)
+		options = append(options, dbName, tableName)
 	}
-	var backupPath string = filepath.Join(targetDirPath, backupFileName)
+
+	// 合并额外的参数
+	var cmdOptions []string
+	if nil != args && len(args) > 0 {
+		slice := make([]string, len(options)+len(args))
+		copy(slice, options)
+		copy(slice[len(options):], args)
+
+		cmdOptions = slice
+	}
+	//for idx, value := range cmdOptions {
+	//	log.Printf("idx: %d -> val: %s", idx, value)
+	//}
+
+	var cmd *exec.Cmd = exec.Command(configs.MYSQLDUMP_PATH, cmdOptions...)
+
+	// 生成带时间戳的文件名
+	var backupFileName string = GenerateDumpFileBaseName(dbName, tableName)
+	//if !compress {
+	//  backupFileName = GenerateDumpFileBaseName(dbName, tableName)
+	//} else {
+	//	backupFileName = GenerateGzipFileBaseName(dbName, tableName)
+	//}
+	var backupPath string
+	if !compress {
+		backupPath = filepath.Join(targetDirPath, backupFileName)
+	} else {
+		backupPath = filepath.Join(targetDirPath, GenerateGzipFileBaseNameByDumpFileBaseName(backupFileName))
+	}
 
 	// 创建目录
 	if err = createDirectoryIfNotExists(targetDirPath); nil != err {
@@ -98,10 +129,10 @@ func Dump(host string, port int, user, password, dbName, tableName, targetDirPat
 	}
 
 	// 输出不同文件类型
-	if compress {
-		_, err = writeGZip(stdout, backupFileName, backupPath)
-	} else {
+	if !compress {
 		_, err = writeDump(stdout, backupFileName, backupPath)
+	} else {
+		_, err = writeGZip(stdout, backupFileName, backupPath)
 	}
 
 	return backupPath, err
@@ -207,6 +238,10 @@ func writeGZip(reader io.Reader, srcPath string, dstPath string) (int, error) {
 	}
 
 	return total, err
+}
+
+func GenerateGzipFileBaseNameByDumpFileBaseName(dumpFileBaseName string) string {
+	return dumpFileBaseName + configs.GZIP_FILE_EXT
 }
 
 func GenerateGzipFileBaseName(dbname string, tableName string) string {

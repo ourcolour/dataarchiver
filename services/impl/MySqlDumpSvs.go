@@ -16,10 +16,10 @@ func NewMySqlDumpSvs() services.IDumpSvs {
 	return services.IDumpSvs(&MySqlDumpSvs{})
 }
 
-func (this *MySqlDumpSvs) Backup(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string, compress bool) (string, error) {
+func (this *MySqlDumpSvs) Backup(host string, port int, user string, pass string, dbName string, tableName string, outputDirPath string, compress bool, args ...string) (string, error) {
 	log.Printf("备份至目录：`%s`\n", outputDirPath)
 
-	dumpFilePath, err := bll.Dump(host, port, user, pass, dbName, tableName, outputDirPath, compress)
+	dumpFilePath, err := bll.Dump(host, port, user, pass, dbName, tableName, outputDirPath, compress, args...)
 	//dumpFilePath, err := this.generateDumpFile(host, port, user, pass, dbName, tableName, outputDirPath, compress)
 
 	log.Printf("备份完毕：`%s`\n", dumpFilePath)

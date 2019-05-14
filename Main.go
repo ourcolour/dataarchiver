@@ -13,9 +13,10 @@ import (
 )
 
 func main() {
-	unittest1()
-	return
+	//unittest1()
+	//return
 	//unittest()
+	//log.Printf("%s\n", filepath.Base("/root/1/t.txt"))
 	//return
 
 	if err := configs.CheckMysqlDump(); nil != err {

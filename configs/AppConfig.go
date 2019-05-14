@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	VERSION       = "1.0.2 (build: 20190514)"
 	DUMP_FILE_EXT = ".dmp"
 	ZIP_FILE_EXT  = ".zip"
 	GZIP_FILE_EXT = ".gz"
@@ -31,6 +32,7 @@ func CheckMysqlDump() error {
 		MYSQLDUMP_PATH += ".exe"
 	}
 
+	log.Printf("VERSION: %s", VERSION)
 	log.Printf("OS PLAT: %s", runtime.GOOS)
 	log.Printf("OS ARCH: %s", runtime.GOARCH)
 	log.Printf("MYSQL_HOME: %s", MYSQL_HOME)

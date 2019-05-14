@@ -27,7 +27,7 @@ var backupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "Backup database",
 	Long: `Backup database by mysqldump, e.g.:
-backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp"`,
+backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp --clearBinLogs"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Arguments
 		host, err := cmd.Flags().GetString("host")
@@ -38,14 +38,37 @@ backup -H "127.0.0.1" -P 3306 -u root -p 123456 -d northworld -o "./dmp"`,
 		tblName, err := cmd.Flags().GetString("tblName")
 		outputDir, err := cmd.Flags().GetString("outputdir")
 		compress, err := cmd.Flags().GetBool("compress")
+		clearBinLogs, err := cmd.Flags().GetBool("clearBinLogs")
+		debug, err := cmd.Flags().GetBool("debug")
 
 		if nil != err {
 			log.Panicf("%s\n", err.Error())
 			return
 		}
 
+		var cmdOptions []string = nil
+		if clearBinLogs {
+			cmdOptions = []string{"--delete-master-logs", "--flush-logs"}
+		}
+
+		// 如果是 debug 模式，打印所有参数
+		if debug {
+			log.Printf("[DEBUG] arguments: host -> %s\n", host)
+			log.Printf("[DEBUG] arguments: port -> %d\n", port)
+			log.Printf("[DEBUG] arguments: user -> %s\n", user)
+			log.Printf("[DEBUG] arguments: pass -> %s\n", pass)
+			log.Printf("[DEBUG] arguments: dbName -> %s\n", dbName)
+			log.Printf("[DEBUG] arguments: tblName -> %s\n", tblName)
+			log.Printf("[DEBUG] arguments: outputDir -> %s\n", outputDir)
+			log.Printf("[DEBUG] arguments: compress -> %v\n", compress)
+
+			for idx, cmdOpt := range cmdOptions {
+				log.Printf("[DEBUG] cmdOptions[%d] -> %s\n", idx, cmdOpt)
+			}
+		}
+
 		var dumpSvs services.IDumpSvs = impl.NewMySqlDumpSvs()
-		dumpSvs.Backup(host, port, user, pass, dbName, tblName, outputDir, compress)
+		dumpSvs.Backup(host, port, user, pass, dbName, tblName, outputDir, compress, cmdOptions...)
 	},
 }
 
@@ -61,4 +84,8 @@ func init() {
 	backupCmd.Flags().StringP("dbname", "d", "", "Database name")
 	backupCmd.Flags().StringP("tblname", "t", "", "Table name")
 	backupCmd.Flags().BoolP("compress", "c", true, "Compress dump file")
+
+	backupCmd.Flags().Bool("clearBinLogs", true, "Delete master logs and rebuild bin-logs.")
+
+	backupCmd.Flags().Bool("debug", false, "Enable debug mode.")
 }
