@@ -40,7 +40,13 @@ clearold -o "./dmp" -d 31
 		}
 
 		var dumpSvs services.IDumpSvs = impl.NewMySqlDumpSvs()
-		dumpSvs.DeleteOldArchiveByOverDayCount(outputDir, overDays)
+		result, err := dumpSvs.DeleteOldArchiveByOverDayCount(outputDir, overDays)
+		if nil != err {
+			log.Panicf("")
+			return
+		}
+
+		log.Printf("Execution finished, total %d file(s) deleted.", len(result))
 	},
 }
 
