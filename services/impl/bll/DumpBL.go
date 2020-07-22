@@ -175,7 +175,7 @@ func writeDump(reader io.ReadCloser, srcPath string, dstPath string) (int, error
 			// 计算已输出长度
 			total += length
 		} else if io.EOF == err { // EOF
-			log.Printf("Total %d bytes were written into target file.\n", total, srcFileName)
+			log.Printf("Total %d bytes were written into target file: `%s`.\n", total, srcFileName)
 			break
 		} else {
 			log.Fatal(err)

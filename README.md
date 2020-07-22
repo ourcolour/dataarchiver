@@ -36,7 +36,7 @@ ${D_HOME}/bin/dbarchiver backup -H <数据库地址> -P 数据库端口 -u <用�
 
 ```
 # 备份所有库
-/usr/local/dataarchiver/bin/dbarchiver backup - H "127.0.0.1" -P 3306 -u root -p toor -o "/mnt/dump_data"
+/usr/local/dataarchiver/bin/dbarchiver backup -H "127.0.0.1" -P 3306 -u root -p toor -o "/mnt/dump_data"
 
 # 压缩备份
 /usr/local/dataarchiver/bin/dbarchiver backup -H "127.0.0.1" -P 3306 -u root -p toor -o "/mnt/dump_data" -c

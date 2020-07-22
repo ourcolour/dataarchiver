@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ourcolour/dataarchiver/cmd"
 	"github.com/ourcolour/dataarchiver/configs"
-	"github.com/ourcolour/dataarchiver/services/impl"
 	"github.com/ourcolour/dataarchiver/services/impl/bll"
 	"io"
 	"log"
@@ -30,17 +29,17 @@ func main() {
 }
 
 func unittest1() {
-	srcPath := "/Users/cc/Desktop/u2.py"
-	dstPath := "/Volumes/Data/u2.zip"
-	comment := "我是注释内容"
-
-	videoSvs := &impl.VideoSvs{}
-	str, err := videoSvs.Archive(srcPath, dstPath, comment, true)
-	if nil != err {
-		log.Panicf("%s\n", err.Error())
-	} else {
-		log.Printf("%s\n", str)
-	}
+	//srcPath := "/Users/cc/Desktop/u2.py"
+	//dstPath := "/Volumes/Data/u2.zip"
+	//comment := "我是注释内容"
+	//
+	//videoSvs := &impl.VideoSvs{}
+	//str, err := videoSvs.Archive(srcPath, dstPath, comment, true)
+	//if nil != err {
+	//	log.Panicf("%s\n", err.Error())
+	//} else {
+	//	log.Printf("%s\n", str)
+	//}
 }
 
 func unittest() {
