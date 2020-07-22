@@ -19,7 +19,7 @@ func main() {
 	//return
 
 	if err := configs.CheckMysqlDump(); nil != err {
-		log.Printf("请设置环境变量 {MYSQL_HOME}", err)
+		log.Printf("请设置环境变量 {MYSQL_HOME}\n")
 		log.Printf("%s\n", err)
 	}
 
